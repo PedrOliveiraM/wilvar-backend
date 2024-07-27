@@ -19,13 +19,11 @@ model Product {
   costPrice Float
   salePrice Float
   quantity  Int
-  items     Item[]
 }
 
 model Item {
   id        Int     @id @default(autoincrement())
   quantity  Int
-  product   Product @relation(fields: [productId], references: [id])
   order     Order   @relation(fields: [orderId], references: [id])
   productId Int
   orderId   Int
