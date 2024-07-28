@@ -15,6 +15,7 @@ datasource db {
 
 model Product {
   id        Int    @id @default(autoincrement())
+  code      String @unique
   name      String
   costPrice Float
   salePrice Float
@@ -24,13 +25,14 @@ model Product {
 model Item {
   id        Int     @id @default(autoincrement())
   quantity  Int
-  order     Order   @relation(fields: [orderId], references: [id])
   productId Int
+  order     Order   @relation(fields: [orderId], references: [id])
   orderId   Int
 }
 
 model Order {
-  id      Int      @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())   
+
   client  String
   date    DateTime
   payment String

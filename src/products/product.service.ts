@@ -33,6 +33,14 @@ export class ProductsService {
     });
   }
 
+  async findProductByCode(code: string): Promise<Product | null> {
+    return this.prisma.product.findUnique({
+      where: {
+        code: code,
+      },
+    });
+  }
+
   // Cria um produto
   async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
     return this.prisma.product.create({

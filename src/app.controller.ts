@@ -39,8 +39,8 @@ export class AppController {
     private readonly OrdersService: OrdersService,
     private readonly ItemsService: ItemsService,
   ) {}
-
   //CRUD --> CREATE - READ - UPDATE - DELETE
+  // READY: CREATE PRODUCT
   @Post('products')
   async createProduct(@Body() createProductDto: CreateProductDto) {
     try {
@@ -55,6 +55,7 @@ export class AppController {
     }
   }
 
+  // READY: FIND PRODUCTS
   @Get('products')
   async getProducts(
     @Query() queryParams: ProductsQueryParams,
@@ -62,7 +63,16 @@ export class AppController {
     try {
       //TODO: CORRIGIR O QUERY PARAMS
       console.log('queryParams:', queryParams);
-      const products = await this.ProductsService.products(queryParams);
+
+      const { skip, take, cursor, where, orderBy } = queryParams;
+
+      const products = await this.ProductsService.products({
+        skip: Number(skip) || undefined,
+        take: Number(take) || undefined,
+        cursor,
+        where,
+        orderBy,
+      });
       console.log('products:', products);
       return {
         message: 'Products retrieved successfully',
@@ -76,7 +86,7 @@ export class AppController {
       );
     }
   }
-
+  // READY: FIND PRODUCTS BY ID
   @Get('products/:id')
   async getProduct(
     @Param('id', ParseIntPipe) id: number,
@@ -101,7 +111,33 @@ export class AppController {
       );
     }
   }
+  // READY: FIND PRODUCTS BY CODE
+  @Get('products/code/:code')
+  async getProductByCode(
+    @Param('code') code: string,
+  ): Promise<ProductsResponse> {
+    try {
+      const product = await this.ProductsService.findProductByCode(code);
+      if (!product) {
+        // Handle case where product might not be found
+        return {
+          message: 'Product not found',
+          data: [], // Return empty array if product not found
+        };
+      }
+      return {
+        message: 'Product retrieved successfully',
+        data: [product], // Wrap the retrieved product in an array
+      };
+    } catch (error) {
+      throw new HttpException(
+        'An error occurred',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
+  // READY: DELETE PRODUCT
   @Delete('products/:id')
   async deleteProduct(
     @Param('id', ParseIntPipe) id: number,
